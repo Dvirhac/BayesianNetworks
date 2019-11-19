@@ -2,7 +2,7 @@
 import java.io.*;
 import java.util.regex.Pattern;
 
-public class readFile {
+public class MyFile {
     /**
      *
      * @param path
