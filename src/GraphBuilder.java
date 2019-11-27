@@ -50,11 +50,24 @@ public class GraphBuilder {
             currVex.setMyCPT(myCPT);
         }
 
+        //////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////Init Queries////////////////////////////
+        //////////////////////////////////////////////////////////////////////////
+
+        String queriess = dataSet[dataSet.length-1];
+        String[] queries = queriess.split("\n");
+        for (int i = 1 ; i < queries.length ; i ++){
+            if (queries[i].charAt(0) != 'P') {
+                String [] curr = queries[i].split("\\|");
+                graph.getIsIndepenentqueries().add(curr);
+            }
 
 
-
-
-
+            else {
+                String [] curr = queries[i].split("\\|");
+                graph.getProbs().add(curr);
+            }
+        }
 
         return graph;
     }

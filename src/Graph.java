@@ -4,12 +4,22 @@ import java.util.*;
 public class Graph {
 
     private List<Vertex> vertices;
+    private ArrayList<String[]> isIndepenentqueries;
+    private ArrayList<String[]> probs;
+
+
 
     Graph(){
         this.vertices = new ArrayList<>();
+        this.isIndepenentqueries = new ArrayList<>();
+        this.probs = new ArrayList<>();
+
     }
     Graph (Graph graph){
         this.vertices = graph.vertices;
+        this.isIndepenentqueries = graph.isIndepenentqueries;
+        this.probs = graph.probs;
+
     }
 
 
@@ -85,9 +95,16 @@ public class Graph {
         return null;
     }
 
-    private boolean bayes_ball(String start, String target){
-
+    private boolean bayes_ball(String[] sourceAndTarget, String[] evidances){
+        if (evidances != null){
+            for (String label : evidances){
+                Vertex evidance = findNodeByName(label);
+                evidance.setEvidence(true);
+            }
+        }
         Queue<Vertex> queue = new LinkedList<>();
+        String start = sourceAndTarget[0];
+        String target = sourceAndTarget[1];
         Vertex startVex = findNodeByName(start);
         startVex.setVisited(true);
         queue.add(startVex);
@@ -123,16 +140,35 @@ public class Graph {
         return true;
     }
 
-    public boolean isIndependent(String source, String target) {
-        return bayes_ball(source, target);
+    public boolean isIndependent(String[] query)
+    {
+        for (Vertex vex: this.vertices) {
+            vex.setEvidence(false);
+        }
+
+        String[] sourceAndTarget = query[0].split("-");
+        if (query.length > 1){
+            StringBuilder evidancess = new StringBuilder();
+            for (int i = 0 ; i < query[1].length(); i ++){
+                if (query[1].charAt(i) >= 60 || query[1].charAt(i) <= 60){
+                    evidancess.append(query[1].charAt(i)).append(",");
+                }
+                String [] evidances = evidancess.toString().split(",");
+                return bayes_ball(sourceAndTarget,evidances);
+            }
+        }
+        String[] empty = null;
+        return bayes_ball(sourceAndTarget,empty);
     }
 
     public List<Vertex> getVertices() {
         return vertices;
     }
-
     public void setVertices(List<Vertex> vertices) {
         this.vertices = vertices;
     }
-
+    public ArrayList<String[]> getIsIndepenentqueries() { return isIndepenentqueries; }
+    public void setIsIndepenentqueries(ArrayList<String[]> isIndepenentqueries) { this.isIndepenentqueries = isIndepenentqueries; }
+    public ArrayList<String[]> getProbs() { return probs; }
+    public void setProbs(ArrayList<String[]> probs) { this.probs = probs; }
 }
