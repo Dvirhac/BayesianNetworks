@@ -1,8 +1,10 @@
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class GraphBuilder {
     static Graph graph = new Graph();
+    static ArrayList<String> queries = new ArrayList<>();
 
     /**
      *
@@ -17,58 +19,54 @@ public class GraphBuilder {
     static Graph createGraphFromText(String path) throws IOException {
         String [] dataSet = MyFile.getData(path);
         String[] vars = dataSet[0].split("\\r?\\n");
-        String[] varss = vars[1].split(",");
-        varss[0] = varss[0].substring(11);
-        for ( int i = 0 ; i < varss.length; i++){
-            graph.addVertex(varss[i]);
+        String[] vertices = vars[1].split(",");
+        vertices[0] = vertices[0].substring(11);
+        for ( int i = 0 ; i < vertices.length; i++){
+            graph.addVertex(vertices[i]);
         }
 
-        ///////////////////////////////////////////////////////////////////////////
-        //////////////////////Adding the edges between the vertices////////////////
-        ///////////////////////////////////////////////////////////////////////////
+            ///////////////////////////////////////////////////////////////////////////
+            //////////////////////Adding the edges between the vertices////////////////
+            ///////////////////////////////////////////////////////////////////////////
 
-        MyCPT myCPT = new MyCPT();
         for (int i = 1; i < dataSet.length -1 ; i++){
+            MyCpt myCpt = new MyCpt();
             vars = dataSet[i].split("\\r?\\n");
+            String values = vars[1].substring(8);
+            String [] vexValues = values.split(",");
             String var = vars[0].substring(4);
+            Vertex currVex = graph.findNodeByName(var);
             String parents = vars[2].substring(9);
-
+            if (parents.equals("none")) {
+                parents = "";
+            }
+                currVex.setParents_st(parents);
             if (!parents.equals("none")){
                 String [] parents1 = parents.split(",");
                 for (String parent : parents1){
                     graph.addParentEdge(var, parent);
                     graph.addChildrenEdge(parent, var);
                 }
-
             }
             //////////////////////////////////////////////////////////////////////////
-            //////////////////////////////////Init CPT////////////////////////////////
+            //////////////////////////////////Init MyCpt////////////////////////////////
             //////////////////////////////////////////////////////////////////////////
 
-            myCPT = MyCPT.build(vars);
-            Vertex currVex = graph.findNodeByName(var);
-            currVex.setMyCPT(myCPT);
+            myCpt.build(vars);
+            currVex.setMyCPT(myCpt);
+            currVex.setValues(vexValues);
         }
 
-        //////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////Init Queries////////////////////////////
-        //////////////////////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////////////////////
+            //////////////////////////////////Init Queries////////////////////////////
+            //////////////////////////////////////////////////////////////////////////
 
-        String queriess = dataSet[dataSet.length-1];
-        String[] queries = queriess.split("\n");
-        for (int i = 1 ; i < queries.length ; i ++){
-            if (queries[i].charAt(0) != 'P') {
-                String [] curr = queries[i].split("\\|");
-                graph.getIsIndepenentqueries().add(curr);
-            }
-
-
-            else {
-                String [] curr = queries[i].split("\\|");
-                graph.getProbs().add(curr);
-            }
+        String blockQuery = dataSet[dataSet.length-1];
+        String[] queries_array = blockQuery.split("\n");
+        for (int i = 1 ; i < queries_array.length ; i ++){
+           queries.add(queries_array[i]);
         }
-
+        graph.setQueries(queries);
         return graph;
     }
 }
