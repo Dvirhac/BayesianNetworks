@@ -1,37 +1,46 @@
-import java.util.ArrayList;
+import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Map;
-import java.util.Set;
 
-public class MyEntry
+public class MyEntry implements Map.Entry<String [], BigDecimal>
 {
 
-    private ArrayList<String> varVal = new ArrayList<>();
-    private ArrayList<Double> probs = new ArrayList<>();
+    private String [] key;
+    private BigDecimal prob;
 
-
-    public ArrayList<String> getVarVal() {
-        return varVal;
+    public MyEntry(String [] key, BigDecimal prob) {
+        this.key = key;
+        this.prob = new BigDecimal(prob.toString());
     }
 
-    public void setVarVal(ArrayList<String> varVal) {
-        this.varVal = varVal;
+    @Override
+    public String[] getKey() {
+        return key;
     }
 
-    public ArrayList<Double> getProbs() {
-        return probs;
+    @Override
+    public BigDecimal getValue() {
+        return prob;
     }
 
-    public void setProbs(ArrayList<Double> probs) {
-        this.probs = probs;
+    @Override
+    public BigDecimal setValue(BigDecimal value) {
+        this.prob = new BigDecimal(value.toString());
+        return prob;
     }
+    MyEntry(MyEntry other) {
 
-    public String toString(){
+        this.key = other.getKey().clone();
+        this.prob = other.prob;
+    }
+    public void setKey(String[] key) {
+        this.key = key;
+    }
+    @Override
+    public String toString() {
         StringBuilder sb = new StringBuilder();
-        for ( int i = 0 ; i < this.varVal.size(); i++){
-            sb.append(varVal.get(i)).append("\n");
-        }
+        sb.append(Arrays.toString(key)).append(" Probability : " + getValue());
         return sb.toString();
     }
-
 }
 
