@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.Arrays;
 
-public class main {
+public class ex1 {
 
     public static void main(String[] args) throws IOException {
         Graph graph = new Graph(GraphBuilder.createGraphFromText("C:\\Users\\Dvir\\IdeaProjects\\BayesianNetworks\\src\\input.txt"));
