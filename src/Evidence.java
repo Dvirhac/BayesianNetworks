@@ -1,12 +1,11 @@
-import java.util.Arrays;
 import java.util.Map;
 
-public class Evidance implements Map.Entry<String,String> ,Comparable<Evidance> {
+public class Evidence implements Map.Entry<String,String> ,Comparable<Evidence> {
 
     private String var;
     private String value;
 
-    Evidance(String var, String value){
+    Evidence(String var, String value){
         this.var = var;
         this.value = value;
     }
@@ -28,7 +27,7 @@ public class Evidance implements Map.Entry<String,String> ,Comparable<Evidance> 
     }
 
     @Override
-    public int compareTo(Evidance o) {
+    public int compareTo(Evidence o) {
         return this.getKey().compareTo(o.getKey());
 
     }

@@ -15,12 +15,23 @@ public class Graph {
         this.queries = graph.getQueries();
     }
 
+    /**
+     *
+     * @param label
+     * add new vertex to the graph with the label
+     */
     void addVertex(String label) {
         Vertex vertex = new Vertex(label);
         vertices.add(vertex);
 
     }
 
+    /**
+     *
+     * @param label1
+     * @param label2
+     * add parent -> children edge
+     */
     void addChildrenEdge(String label1, String label2) {
 
         Vertex v1 = findNodeByName(label1);
@@ -31,6 +42,12 @@ public class Graph {
         }
     }
 
+    /**
+     *
+     * @param label1
+     * @param label2
+     * add children -> parent edge
+     */
     void addParentEdge(String label1, String label2) {
 
         Vertex v1 = findNodeByName(label1);
@@ -41,6 +58,11 @@ public class Graph {
         }
     }
 
+    /**
+     *
+     * @param label
+     * @return the vertex with the same label
+     */
     Vertex findNodeByName(String label){
         Iterator it = vertices.iterator();
         while (it.hasNext()){
@@ -50,16 +72,12 @@ public class Graph {
         return null;
     }
 
-    static Vertex findNodeByName(String label, ArrayList<Vertex> vertices){
-        Iterator it = vertices.iterator();
-        while (it.hasNext()){
-            Vertex vertex = (Vertex) it.next();
-            if (vertex.getLabel().equals(label)) return vertex;
-        }
-        return null;
-    }
-
-    public void isIndependent(String[] query)
+    /**
+     *
+     * @param query
+     * @return if the variables are independent given evidences
+     */
+    public String isIndependent(String[] query)
     {
         resetVertices();
         String[] sourceAndTarget = query[0].split("-");
@@ -71,17 +89,17 @@ public class Graph {
                 }
             }
             String [] evidances = evidancess.toString().split(",");
-            bayes_ball(sourceAndTarget,evidances);
+            return bayes_ball(sourceAndTarget,evidances);
         }
 
         else {
             String[] empty = null;
-            bayes_ball(sourceAndTarget, empty);
+            return bayes_ball(sourceAndTarget, empty);
         }
     }
 
-    private void bayes_ball(String[] sourceAndTarget, String[] evidances){
-        setEvidances(evidances);
+    private String bayes_ball(String[] sourceAndTarget, String[] evidances){
+        setEvidences(evidances);
         Queue<Vertex> queue = new LinkedList<>();
         String start = sourceAndTarget[0];
         String target = sourceAndTarget[1];
@@ -98,7 +116,7 @@ public class Graph {
             Vertex vertex = queue.poll();
             if (checkTarget(vertex.getLabel(), target)){
                 System.out.println("no");
-                return;
+                return "no";
             }
             if (!vertex.isVisited()) {
                 if (vertex.isEvidence() && vertex.isCameFromParent()) {
@@ -132,9 +150,14 @@ public class Graph {
             vertex.setVisited(true);
         }
         System.out.println("yes");
+        return "yes";
+
     }
 
-    private void resetVertices() {
+    /**
+     * reset the mode of the vertices
+     */
+    public void resetVertices() {
         for (Vertex vertex : vertices){
             vertex.setVisited(false);
             vertex.setCameFromChild(false);
@@ -143,13 +166,23 @@ public class Graph {
         }
     }
 
+    /**
+     *
+     * @param label
+     * @param label2
+     * @return return if the labels are equal
+     */
     boolean checkTarget(String label, String label2){
         return label.equals(label2);
     }
 
-    private void setEvidances(String[] evidances) {
-        if (evidances != null){
-            for (String label : evidances){
+    /**
+     * set the evidences vertices
+     * @param evidences
+     */
+    private void setEvidences(String[] evidences) {
+        if (evidences != null){
+            for (String label : evidences){
                 Vertex evidance = findNodeByName(label);
                 evidance.setEvidence(true);
             }
