@@ -9,15 +9,20 @@ public class GraphBuilder {
     /**
      *
      * @param path
-     * @return graph with all the Vertices and edges that were given in the text.
+     * @return graph with all the Vertices, edges, cpt's and queries that were given in the text.
      * @throws IOException
      */
     //////////////////////////////////////////////////////////////////////////////
     /////////////////////////Adding the vertices into the graph///////////////////
     //////////////////////////////////////////////////////////////////////////////
 
-    static Graph createGraphFromText(String path) throws IOException {
-        String [] dataSet = MyFile.getData(path);
+    static Graph createGraphFromText(String path)   {
+        String [] dataSet = new String[0];
+        try {
+            dataSet = MyFile.getData(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         String[] vars = dataSet[0].split("\\r?\\n");
         String[] vertices = vars[1].split(",");
         vertices[0] = vertices[0].substring(11);

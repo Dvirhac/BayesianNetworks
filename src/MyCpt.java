@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MyCpt implements Comparable<MyCpt> {
+public class MyCpt implements Comparable<MyCpt>
+{
     private Vertex vertex;
     private String[] label_array;
     private String label;
@@ -13,19 +14,23 @@ public class MyCpt implements Comparable<MyCpt> {
     static int numOfJoins;
     static int numOfElimination;
 
-    MyCpt(MyCpt other) {
-        this.label_array = other.label_array;
+    MyCpt(MyCpt other)
+    {
+        this.label = other.label;
+        this.vertex = other.vertex;
         for (MyEntry entry : other.getCpt()) {
             MyEntry myEntry = new MyEntry(entry);
             this.cpt.add(myEntry);
         }
     }
-    MyCpt() {
+    MyCpt()
+    {
 
     }
-    public static void removeParent(MyCpt myCpt, String parent) {
+    public  void removeParent(String parent)
+    {
 
-        String[] parents_array = myCpt.getVertex().getParents_st().split(",");
+        String[] parents_array = this.getVertex().getParents_st().split(",");
         int index = 0;
         for (int i = 0; i < parents_array.length; i++) {
             if (parents_array[i].equals(parent)) {
@@ -34,10 +39,10 @@ public class MyCpt implements Comparable<MyCpt> {
             }
         }
 
-        for (int i = 0; i < myCpt.getCpt().size(); i++) {
-            MyEntry entry = myCpt.getCpt().get(i);
-            if (entry.getKey()[index].equals(myCpt.getVertex().getValues()[myCpt.getVertex().getValues().length - 1])) {
-                myCpt.getCpt().remove(i);
+        for (int i = 0; i < this.getCpt().size(); i++) {
+            MyEntry entry = this.getCpt().get(i);
+            if (entry.getKey()[index].equals(this.getVertex().getValues()[this.getVertex().getValues().length - 1])) {
+                this.getCpt().remove(i);
                 i--;
             }
             List<String> list = new ArrayList<>(Arrays.asList(entry.getKey()));
@@ -48,34 +53,37 @@ public class MyCpt implements Comparable<MyCpt> {
 
     }
 
-    public static void removeChild(MyCpt myCpt, String mode) {
+    public  void removeChild(String mode)
+    {
 
         ArrayList<MyEntry> entries = new ArrayList<>();
 
-        for (int i = 0; i < myCpt.getCpt().size(); i++) {
-            MyEntry entry = myCpt.getCpt().get(i);
+        for (int i = 0; i < this.getCpt().size(); i++) {
+            MyEntry entry = this.getCpt().get(i);
             List<String> list_entry = new ArrayList<>(Arrays.asList(entry.getKey()));
             if (!list_entry.get(list_entry.size() - 1).equals(mode)) {
-                myCpt.getCpt().remove(i);
+                this.getCpt().remove(i);
                 i--;
             }
         }
 
 
-        for (MyEntry entry : myCpt.getCpt()) {
+        for (MyEntry entry : this.getCpt()) {
             List<String> list = new ArrayList<>(Arrays.asList(entry.getKey()));
             list.remove(list.size() - 1);
             entry.setKey(list.toArray(new String[0]));
             entries.add(entry);
         }
-        myCpt.setCpt(entries);
+        this.setCpt(entries);
     }
 
-    public void add(MyEntry entry) {
+    public void add(MyEntry entry)
+    {
         this.cpt.add(entry);
     }
 
-    void build(String[] vars) {
+    void build(String[] vars)
+    {
         StringBuilder bs = new StringBuilder();
         for (int i = 4; i < vars.length; i++) {
             bs.append(vars[i]).append("\n");
@@ -104,7 +112,8 @@ public class MyCpt implements Comparable<MyCpt> {
         }
     }
 
-    private void makeEntry(StringBuilder entry, String probability, String mode) {
+    private void makeEntry(StringBuilder entry, String probability, String mode)
+    {
         StringBuilder new_Entry = new StringBuilder(entry);
         new_Entry.append(mode).append(",");
         String[] subEntry = new_Entry.toString().split(",");
@@ -113,16 +122,18 @@ public class MyCpt implements Comparable<MyCpt> {
 
     }
 
-    public static MyCpt joinCpt(MyCpt first, MyCpt second, String var) {
+    public static MyCpt joinCpt(MyCpt first, MyCpt second, String var)
+    {
         MyCpt new_myCpt = new MyCpt();
-        int cpt1Size = getSize(first);
-        int cpt2Size = getSize(second);
+        int cpt1Size = first.getSize();
+        int cpt2Size = second.getSize();
         int whoStart;
 
         if (cpt1Size > cpt2Size)
             whoStart = 1;
         else if (cpt2Size > cpt1Size)
             whoStart = 2;
+
         else {
             byte[] f = new byte[0];
             try {
@@ -149,24 +160,25 @@ public class MyCpt implements Comparable<MyCpt> {
             else whoStart = 2;
         }
 
-        String label = createLabel(first.getLabel(), second.getLabel(), var, whoStart);
+        String label = createLabel(first.getLabel(), second.getLabel(), whoStart);
         new_myCpt.setLabel(label);
         new_myCpt.setLabel_array(label.split(","));
         if (whoStart == 1) {
-            makeCptFromJoin(first, second, new_myCpt);
+            new_myCpt.makeCptFromJoin(first, second);
         } else {
-            makeCptFromJoin(second, first, new_myCpt);
+            new_myCpt.makeCptFromJoin(second, first);
         }
 
         return new_myCpt;
     }
 
-    private static void makeCptFromJoin(MyCpt first, MyCpt second, MyCpt new_myCpt) {
+    private void makeCptFromJoin(MyCpt first, MyCpt second)
+    {
         String[] common_array = findCommon(first.getLabel(), second.getLabel());
         List<Integer> common_indexes_first_list = new ArrayList<>();
         List<Integer> common_indexes_second_list = new ArrayList<>();
-        findcommonIndexes(first, common_array, common_indexes_first_list);
-        findcommonIndexes(second, common_array, common_indexes_second_list);
+        first.findcommonIndexes(common_array, common_indexes_first_list);
+        second.findcommonIndexes(common_array, common_indexes_second_list);
         for (MyEntry entry_first : first.getCpt()) {
             List<String> first_entry_list = new ArrayList<>(Arrays.asList(entry_first.getKey()));
             StringBuilder bs = new StringBuilder();
@@ -194,7 +206,7 @@ public class MyCpt implements Comparable<MyCpt> {
                     String[] new_entry = bs.toString().split(",");
                     numOfJoins++;
                     MyEntry entry = new MyEntry(new_entry, entry_first.getValue().multiply(entry_second.getValue()));
-                    new_myCpt.add(entry);
+                    this.add(entry);
                     bs = new StringBuilder();
                     commmonSize = false;
                 }
@@ -202,11 +214,12 @@ public class MyCpt implements Comparable<MyCpt> {
         }
     }
 
-    private static boolean notIn(int j, List<Integer> common_array) {
+    private boolean notIn(int j, List<Integer> common_array) {
         return !common_array.contains(j);
     }
 
-    public void eliminate(String var, int numOfValues) {
+    public void eliminate(String var, int numOfValues)
+    {
         ArrayList<MyEntry> entries = new ArrayList<>();
         int eliminateIndex = findIndex(var);
         int size_of_table = this.label_array.length;
@@ -268,7 +281,8 @@ public class MyCpt implements Comparable<MyCpt> {
 
     }
 
-    private boolean isContains(int firstRunner, ArrayList<Integer> indexesBeenVisited) {
+    private boolean isContains(int firstRunner, ArrayList<Integer> indexesBeenVisited)
+    {
         boolean ans = false;
         for (int index : indexesBeenVisited){
             if (index == firstRunner) ans = true;
@@ -276,7 +290,8 @@ public class MyCpt implements Comparable<MyCpt> {
         return ans;
     }
 
-    private int findIndex(String var) {
+    private int findIndex(String var)
+    {
         for (int i = 0 ; i <  this.getLabel_array().length ; i ++ ){
             if (this.getLabel_array()[i].equals(var)){
                 return i;
@@ -285,10 +300,11 @@ public class MyCpt implements Comparable<MyCpt> {
         return -1;
     }
 
-    private static void findcommonIndexes(MyCpt myCpt, String[] common_array, List<Integer> common_indexes_list) {
+    private  void findcommonIndexes( String[] common_array, List<Integer> common_indexes_list)
+    {
         for (int i = 0 ; i < common_array.length; i ++){
-            for (int j = 0; j < myCpt.getLabel_array().length  ; j ++ ){
-                if (common_array[i].equals(myCpt.getLabel_array()[j])){
+            for (int j = 0; j < this.getLabel_array().length  ; j ++ ){
+                if (common_array[i].equals(this.getLabel_array()[j])){
                     common_indexes_list.add(j);
                     break;
                 }
@@ -296,7 +312,8 @@ public class MyCpt implements Comparable<MyCpt> {
         }
     }
 
-    private static String createLabel(String first, String second, String var, int whoStart) {
+    private static String createLabel(String first, String second, int whoStart)
+    {
         StringBuilder bs = new StringBuilder();
         if (whoStart == 1){
             bs.append(first);
@@ -318,7 +335,8 @@ public class MyCpt implements Comparable<MyCpt> {
 
     }
 
-    private static String [] findCommon(String label, String label1) {
+    private static String [] findCommon(String label, String label1)
+    {
         StringBuilder bs = new StringBuilder();
         for (char c : label.toCharArray()){
             for (char h : label1.toCharArray()){
@@ -360,8 +378,8 @@ public class MyCpt implements Comparable<MyCpt> {
         return sb.toString();
     }
 
-    private static int getSize(MyCpt myCpt) {
-        return myCpt.label_array.length;
+    private int getSize() {
+        return this.label_array.length;
     }
 
     @Override

@@ -20,6 +20,7 @@ public class Vertex {
         children = new ArrayList<>();
         myCPT = new MyCpt();
     }
+
     public void addParent(Vertex v){
         this.parents.add(v);
     }
@@ -44,10 +45,6 @@ public class Vertex {
             }
         }
         return false;
-    }
-
-    public boolean isLeaf(){
-        return this.getChildren().size() == 0;
     }
 
 
